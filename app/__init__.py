@@ -1,4 +1,2 @@
 import flask
-
-a = 2
-print(a)
+import sqlite3
