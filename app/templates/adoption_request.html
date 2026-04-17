@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+
+{% block title %}Заявка на пристройство - {{ animal.name }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-home"></i> Заявка на пристройство</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Животное:</strong> {{ animal.name }} ({{ animal.species }}, {{ animal.age }} лет)
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Ваше полное имя *</label>
+                        <input type="text" name="full_name" class="form-control" required placeholder="Иванов Иван Иванович">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Email *</label>
+                        <input type="email" name="email" class="form-control" required placeholder="ivan@example.ru">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Телефон</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="+7 (999) 123-45-67">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Опыт содержания животных</label>
+                        <textarea name="experience" class="form-control" rows="3" placeholder="Расскажите, был ли у вас опыт содержания животных..."></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Дополнительная информация</label>
+                        <textarea name="message" class="form-control" rows="3" placeholder="Почему вы хотите взять именно это животное? Какие условия содержания можете предложить?"></textarea>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> После отправки заявки администратор свяжется с вами для уточнения деталей.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('animal_card', id=animal.id) }}" class="btn btn-secondary">Назад</a>
+                        <button type="submit" class="btn btn-primary">Отправить заявку</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

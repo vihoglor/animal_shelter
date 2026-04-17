@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Редактирование - {{ animal.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="fas fa-edit"></i> Редактирование - {{ animal.name }}</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.name.label }}</label>
+                            {{ form.name(class="form-control") }}
+                            {% for error in form.name.errors %}
+                                <small class="text-danger">{{ error }}</small>
+                            {% endfor %}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.species.label }}</label>
+                            {{ form.species(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.breed.label }}</label>
+                            {{ form.breed(class="form-control") }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.gender.label }}</label>
+                            {{ form.gender(class="form-select") }}
+                        </div>
+                        <div class="col-md-3 mb-3">
+                            <label class="form-label">{{ form.age.label }}</label>
+                            {{ form.age(class="form-control") }}
+                        </div>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.color.label }}</label>
+                            {{ form.color(class="form-control") }}
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">{{ form.status.label }}</label>
+                            {{ form.status(class="form-select") }}
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.description.label }}</label>
+                        {{ form.description(class="form-control", rows=5) }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.photo.label }}</label>
+                        {{ form.photo(class="form-control") }}
+                        <small class="text-muted">Оставьте пустым, чтобы не менять фото. Поддерживаемые форматы: JPG, PNG, GIF</small>
+                    </div>
+                    
+                    <hr>
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('animal_card', id=animal.id) }}" class="btn btn-secondary">Отмена</a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card shadow-sm">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0"><i class="fas fa-images"></i> Фотографии</h5>
+            </div>
+            <div class="card-body">
+                {% if animal.photos %}
+                    <div class="row">
+                        {% for photo in animal.photos %}
+                        <div class="col-12 mb-3">
+                            <div class="card">
+                                <img src="{{ url_for('static', filename=photo.file_path) }}" class="card-img-top" alt="Фото" style="height: 150px; object-fit: cover;">
+                                <div class="card-body p-2 text-center">
+                                    {% if photo.is_main %}
+                                        <span class="badge bg-success mb-2">Главное фото</span>
+                                    {% else %}
+                                        <a href="{{ url_for('set_main_photo', photo_id=photo.id) }}" class="btn btn-sm btn-outline-primary mb-2">Сделать главным</a>
+                                    {% endif %}
+                                    <a href="{{ url_for('delete_photo', photo_id=photo.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Удалить фото?')">Удалить</a>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted text-center">Фотографий пока нет</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

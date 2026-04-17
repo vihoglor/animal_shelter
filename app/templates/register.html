@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+
+{% block title %}Регистрация{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">Регистрация волонтёра</h4>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.name.label }}</label>
+                        {{ form.name(class="form-control", placeholder="Иван Иванов") }}
+                        {% for error in form.name.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.email.label }}</label>
+                        {{ form.email(class="form-control", placeholder="ivan@example.ru") }}
+                        {% for error in form.email.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.phone.label }}</label>
+                        {{ form.phone(class="form-control", placeholder="+7 (999) 123-45-67", id="phone") }}
+                        {% for error in form.phone.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                        <small class="text-muted">Пример: +7 (999) 123-45-67 или 89123456789</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.password.label }}</label>
+                        {{ form.password(class="form-control", placeholder="Пароль") }}
+                        {% for error in form.password.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">{{ form.confirm_password.label }}</label>
+                        {{ form.confirm_password(class="form-control", placeholder="Повторите пароль") }}
+                        {% for error in form.confirm_password.errors %}
+                            <small class="text-danger">{{ error }}</small>
+                        {% endfor %}
+                    </div>
+                    {{ form.submit(class="btn btn-primary w-100") }}
+                </form>
+                <hr>
+                <p class="text-center mb-0">Уже есть аккаунт? <a href="{{ url_for('login') }}">Войти</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+<script>
+    $(document).ready(function(){
+        $('#phone').mask('+7 (000) 000-00-00');
+    });
+</script>
+{% endblock %}

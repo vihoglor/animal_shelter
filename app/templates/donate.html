@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Пожертвование - {{ fundraiser.title }}{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-success text-white">
+                <h4 class="mb-0"><i class="fas fa-donate"></i> Пожертвование</h4>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>{{ fundraiser.title }}</strong><br>
+                    <small>{{ fundraiser.description[:100] }}...</small>
+                    <div class="mt-2">
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" 
+                                style="width: {{ ((fundraiser.collected_amount / fundraiser.goal_amount) * 100)|round }}%;">
+                                {{ ((fundraiser.collected_amount / fundraiser.goal_amount) * 100)|round }}%
+                            </div>
+                        </div>
+                        <small class="text-muted">Собрано: {{ fundraiser.collected_amount }} / {{ fundraiser.goal_amount }} руб.</small>
+                    </div>
+                </div>
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Сумма пожертвования (руб.) *</label>
+                        <div class="row">
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="setAmount(500)">500 ₽</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="setAmount(1000)">1000 ₽</button>
+                            </div>
+                            <div class="col-4">
+                                <button type="button" class="btn btn-outline-secondary w-100" onclick="setAmount(3000)">3000 ₽</button>
+                            </div>
+                        </div>
+                        <div class="mt-2">
+                            <input type="number" name="amount" id="amount" class="form-control" required placeholder="Или введите свою сумму" step="100" min="100">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Комментарий</label>
+                        <textarea name="comment" class="form-control" rows="3" placeholder="Ваши пожелания или слова поддержки..."></textarea>
+                    </div>
+                    
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle"></i> В демо-версии пожертвование не списывает реальные средства. Это эмуляция.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('catalog') }}" class="btn btn-secondary">Отмена</a>
+                        <button type="submit" class="btn btn-success">Пожертвовать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function setAmount(amount) {
+    document.getElementById('amount').value = amount;
+}
+</script>
+{% endblock %}

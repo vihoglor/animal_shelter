@@ -1,0 +1,58 @@
+
+.card {
+    transition: transform 0.2s;
+}
+
+.card-img:hover {
+    transform: translateY(-5px);
+}
+
+.navbar-brand i {
+    margin-right: 8px;
+}
+
+.btn-primary {
+    background-color: #ff8c42;
+    border-color: #ff8c42;
+}
+
+.btn-primary:hover {
+    background-color: #e67e22;
+    border-color: #e67e22;
+}
+
+.bg-primary {
+    background-color: #5b9d71 !important;
+}
+
+.bg-secondary {
+    background-color: #4a5568 !important;
+}
+
+.text-primary {
+    color: #ff8c42 !important;
+}
+
+.badge.bg-success {
+    background-color: #4caf50 !important;
+}
+
+.navbar-dark .navbar-nav .nav-link{
+    color: #fff;
+}
+
+.animal-name{
+    display: block;
+    width: 100%;
+    text-align: center;
+
+}
+
+.animal-name:hover{
+
+}
+
+.table{
+    vertical-align: middle;
+    
+}

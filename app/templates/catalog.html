@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог животных{% endblock %}
+
+{% block content %}
+<h1 class="mb-4 text-center">Наши хвостики ищут дом</h1>
+
+<div class="row">
+    {% for animal in animals %}
+    <div class="col-md-4 col-sm-6 mb-4">
+        <div class="card card-img h-100 shadow-sm">
+            {% set photo = animal.get_main_photo() %}
+            {% if photo %}
+                <img src="{{ url_for('static', filename=photo) }}" class="card-img-top" alt="{{ animal.name }}">
+            {% else %}
+                <div class="card-img-top bg-light d-flex align-items-center justify-content-center" style="height: 200px;">
+                    <i class="fas fa-paw fa-4x text-secondary"></i>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <h5 class="card-title">{{ animal.name }}</h5>
+                <p class="card-text">
+                    <small class="text-muted">{{ animal.species }}, {{ animal.age }} лет</small><br>
+                    {{ animal.description[:100] }}{% if animal.description|length > 100 %}...{% endif %}
+                </p>
+                 {% if animal.status == 'Ищет дом' %}
+                    <span class="badge bg-success">{{animal.status}}</span>
+                {% elif animal.status == 'Пристроен' %}
+                    <span class="badge bg-secondary">{{animal.status}}</span>
+                {% elif animal.status == 'На лечении' %}
+                    <span class="badge bg-warning">{{animal.status}}</span>
+                {% elif animal.status == 'На передержке' %}
+                    <span class="badge bg-info">{{animal.status}}</span>
+                {% else %}
+                    <span class="badge bg-warning">{{ animal.status }}</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{{ url_for('animal_card', id=animal.id) }}" class="btn btn-primary w-100">Подробнее</a>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="col-12 text-center">
+        <p>Пока нет животных, доступных для пристройства</p>
+        <i class="fas fa-heart fa-3x text-danger"></i>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

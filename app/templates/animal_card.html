@@ -1,0 +1,173 @@
+{% extends "base.html" %}
+
+{% block title %}{{ animal.name }} - карточка животного{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6">
+        <div class="card card-img shadow-sm mb-4">
+            {% set photo = animal.get_main_photo() %}
+            {% if photo %}
+                <img src="{{ url_for('static', filename=photo) }}" class="card-img-top" alt="{{ animal.name }}" style="height: 400px; object-fit: cover;">
+            {% else %}
+                <div class="bg-light d-flex align-items-center justify-content-center" style="height: 400px;">
+                    <i class="fas fa-paw fa-5x text-secondary"></i>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <h2 class="card-title">{{ animal.name }}</h2>
+                <hr>
+                <div class="row">
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-tag"></i> Вид:</strong> {{ animal.species }}</p>
+                        <p><strong><i class="fas fa-paw"></i> Порода:</strong> {{ animal.breed or 'Не указана' }}</p>
+                        <p><strong><i class="fas fa-venus-mars"></i> Пол:</strong> {{ 'Мужской' if animal.gender == 'male' else 'Женский' }}</p>
+                        <p><strong><i class="fas fa-calendar-alt"></i> Возраст:</strong> {{ animal.age }} лет</p>
+                    </div>
+                    <div class="col-md-6">
+                        <p><strong><i class="fas fa-palette"></i> Окрас:</strong> {{ animal.color or 'Не указан' }}</p>
+                        <p><strong><i class="fas fa-calendar-plus"></i> В приюте с:</strong> {{ animal.created_at.strftime('%d.%m.%Y') }}</p>
+                        <p><strong><i class="fas fa-chart-line"></i> Статус:</strong> 
+                            {% if animal.status == 'looking' %}
+                                <span class="badge bg-success">Ищет дом</span>
+                            {% elif animal.status == 'adopted' %}
+                                <span class="badge bg-secondary">Пристроен</span>
+                            {% elif animal.status == 'treatment' %}
+                                <span class="badge bg-warning">На лечении</span>
+                            {% else %}
+                                <span class="badge bg-info">{{ animal.status }}</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                <hr>
+                <h5><i class="fas fa-align-left"></i> Описание:</h5>
+                <p class="mt-2">{{ animal.description }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Кнопки действий для разных ролей -->
+<div class="row mt-3">
+    <div class="col-12">
+        <!-- Кнопка "Хочу забрать" для всех пользователей (кроме пристроенных животных) -->
+        {% if animal.status == 'looking' %}
+            <a href="{{ url_for('adoption_request', animal_id=animal.id) }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-home"></i> Хочу забрать домой
+            </a>
+        {% endif %}
+        
+        <!-- Кнопка "Пожертвовать" (если есть активный сбор) -->
+        {% if animal.active_fundraiser %}
+            <a href="{{ url_for('donate', fundraiser_id=animal.active_fundraiser.id) }}" class="btn btn-success btn-lg">
+                <i class="fas fa-donate"></i> Помочь financially
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Блок для волонтёров и администраторов (отметка активности) -->
+{% if current_user.is_authenticated and (current_user.is_volunteer() or current_user.is_admin()) %}
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-primary text-white">
+        <h5 class="mb-0"><i class="fas fa-clipboard-list"></i> Отметить действие</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="{{ url_for('log_activity', animal_id=animal.id) }}">
+            {{ form.hidden_tag() }}
+            <div class="row align-items-end">
+                <div class="col-md-4 mb-3">
+                    <label class="form-label fw-bold">{{ form.action_type.label }}</label>
+                    {{ form.action_type(class="form-select") }}
+                </div>
+                <div class="col-md-6 mb-3">
+                    <label class="form-label fw-bold">{{ form.comment.label }}</label>
+                    {{ form.comment(class="form-control", placeholder="Например: прогулка 30 минут, съел всё, активный") }}
+                </div>
+                <div class="col-md-2 mb-3">
+                    {{ form.submit(class="btn btn-success w-100") }}
+                </div>
+            </div>
+        </form>
+        <small class="text-muted">
+            <i class="fas fa-info-circle"></i> Отмечайте кормление, выгул и уборку — это помогает вести учёт ухода за животными.
+        </small>
+    </div>
+</div>
+{% endif %}
+
+<!-- Лента активности -->
+<div class="card shadow-sm mt-4">
+    <div class="card-header bg-secondary text-white">
+        <h5 class="mb-0"><i class="fas fa-history"></i> История активности</h5>
+    </div>
+    <div class="card-body">
+        {% if activities %}
+            <div class="timeline">
+                {% for activity in activities %}
+                <div class="timeline-item mb-3">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <span class="badge 
+                                {% if activity.action_type == 'feeding' %}bg-success
+                                {% elif activity.action_type == 'walking' %}bg-info
+                                {% elif activity.action_type == 'cleaning' %}bg-warning
+                                {% else %}bg-secondary{% endif %} me-2">
+                                {% if activity.action_type == 'feeding' %}
+                                    <i class="fas fa-utensils"></i> Кормление
+                                {% elif activity.action_type == 'walking' %}
+                                    <i class="fas fa-walking"></i> Выгул
+                                {% elif activity.action_type == 'cleaning' %}
+                                    <i class="fas fa-broom"></i> Уборка
+                                {% else %}
+                                    {{ activity.action_type }}
+                                {% endif %}
+                            </span>
+                            <strong>{{ activity.user.name }}</strong>
+                            {% if activity.comment %}
+                                <br><small class="text-muted"><i class="fas fa-comment"></i> {{ activity.comment }}</small>
+                            {% endif %}
+                        </div>
+                        <small class="text-muted">
+                            <i class="far fa-clock"></i> {{ activity.created_at.strftime('%d.%m.%Y %H:%M') }}
+                        </small>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="text-center py-4">
+                <i class="fas fa-paw fa-3x text-muted mb-3"></i>
+                <p class="text-muted">Активность пока не отмечена</p>
+                {% if current_user.is_authenticated and (current_user.is_volunteer() or current_user.is_admin()) %}
+                    <p class="text-muted small">Будьте первым, кто отметит действие для этого животного!</p>
+                {% endif %}
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Кнопка назад -->
+<div class="mt-4 mb-5">
+    <a href="{{ url_for('catalog') }}" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-left"></i> Назад к каталогу
+    </a>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Автоматическое скрытие flash-сообщений через 5 секунд
+    $(document).ready(function() {
+        setTimeout(function() {
+            $('.alert').fadeOut('slow');
+        }, 5000);
+    });
+</script>
+{% endblock %}
